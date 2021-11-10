@@ -51,15 +51,12 @@ class ArticleController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="article_edit", methods={"GET","POST"})
+     * @Security("is_granted('ROLE_ADMIN')
      */
     public function edit(Request $request, Article $article): Response
     {
-
-        if ($this->getUser()->hasRoleAdmin()) {
-            $form = $this->createForm(ArticleType::class, $article);
-            $form->handleRequest($request);
-        }
-
+        $form = $this->createForm(ArticleType::class, $article);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
@@ -78,7 +75,7 @@ class ArticleController extends AbstractController
      */
     public function delete(Request $request, Article $article): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$article->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $article->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($article);
             $entityManager->flush();
